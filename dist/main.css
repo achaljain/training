@@ -1,0 +1,9 @@
+.rootContainer {
+  background-color: aquamarine; }
+  .rootContainer .messageContainer {
+    font-weight: bold; }
+  .rootContainer img {
+    height: 100px;
+    width: 100px;
+    padding: 20px; }
+
