@@ -1,0 +1,12 @@
+{
+  "name": "magic-training",
+  "version": "1.0.0",
+  "description": "Amira storysb cloudformation stack",
+  "main": "index.js",
+  "scripts": {
+    "package": "aws cloudformation package --template-file template.yaml --s3-bucket training-sample-template --output-template-file template-prod.yaml --force-upload",
+    "deploy": "aws cloudformation deploy --template-file template-prod.yaml --stack-name MagicTrainingStack --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM"
+  },
+  "author": "",
+  "license": "ISC"
+}
