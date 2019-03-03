@@ -6,12 +6,45 @@ import { Route, Link, HashRouter as Router, Switch } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import Store from './redux/store'
 
+import AWS from 'aws-sdk'
+import Amplify, { Auth } from 'aws-amplify'
+import { withAuthenticator } from 'aws-amplify-react'
+import AWSConfig from './configs/aws'
+
 import Root from './components/root'
 import ReduxDemo from './components/reduxDemo'
 import SagaDemo from './components/sagaDemo'
 import NotFound from './components/notFound'
 
 import './styles/main.scss'
+
+Amplify.configure({
+	Auth: {
+		mandatorySignIn: false,
+		region: AWSConfig.cognito.REGION,
+		identityPoolId: AWSConfig.cognito.IDENTITY_POOL_ID,
+		userPoolId: AWSConfig.cognito.USER_POOL_ID,
+		userPoolWebClientId: AWSConfig.cognito.APP_CLIENT_ID
+	}
+});
+
+Auth.currentSession()
+	.then(data => {
+		let loginurl = 'cognito-idp.' + AWSConfig.cognito.REGION + '.amazonaws.com/' + AWSConfig.cognito.USER_POOL_ID
+		// Add the User's Id Token to the Cognito credentials login map.
+		AWS.config.region = AWSConfig.cognito.REGION;
+		AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+			IdentityPoolId: AWSConfig.cognito.IDENTITY_POOL_ID,
+			Logins: {
+				[loginurl]: data.getIdToken().getJwtToken()
+			}
+		});
+		startApp();
+	})
+	.catch(err => {
+		console.log(err)
+		startApp();
+	});
 
 class App extends Component {
     render() {
@@ -45,4 +78,8 @@ class App extends Component {
     }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
+let AppWrapper = withAuthenticator(App, true)
+
+function startApp() {
+	ReactDOM.render(<AppWrapper />, document.getElementById('root'))
+}

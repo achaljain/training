@@ -1,10 +1,10 @@
 import { put, takeEvery } from 'redux-saga/effects';
 import { Creators } from '../actions';
-import { getData } from '../../api';
+import API from '../../api';
 
 function* testSagaRequest(action) {
     try {
-        let asyncData = yield getData(action.range)
+        let asyncData = yield API.getWordList(action.range)
         yield put(Creators.testSagaSuccess(asyncData))
     } catch (err) {
         yield put(Creators.testSagaFailure("Range not found"))
